@@ -1,0 +1,105 @@
+/*
+这是第一次空数据的时候
+
+{
+"state": 1,
+"code": 0,
+"message": "",
+"data": {
+"json_value": null
+}
+}
+
+
+*/
+
+//这是第一次创建文件夹的时候
+{
+  "state": 1,
+  "code": 0,
+  "message": "",
+  "data": {
+    "json_value": {
+      "checksum": "6dbecf0e80e02dcc7f892a1c3b5d2820",
+      "roots": {
+        "bookmark_bar": {
+          "children": [
+            {
+              "children": [],
+              "date_added": "13187773907705609",
+              "date_modified": "13187773907705613",
+              "id": "26",
+              "name": "qwe",
+              "type": "folder"
+            }
+          ],
+          "date_added": "13187773795709860",
+          "date_modified": "0",
+          "id": "1",
+          "name": "\u4e66\u7b7e\u680f",
+          "type": "folder"
+        },
+        "other": {
+          "children": [],
+          "date_added": "13187773795709885",
+          "date_modified": "0",
+          "id": "2",
+          "name": "\u5176\u4ed6\u4e66\u7b7e",
+          "type": "folder"
+        },
+        "synced": {
+          "children": [],
+          "date_added": "13187773795710591",
+          "date_modified": "0",
+          "id": "28",
+          "name": "\u79fb\u52a8\u8bbe\u5907\u4e66\u7b7e",
+          "type": "folder"
+        }
+      },
+      "version": 1
+    }
+  }
+}
+
+//这是创建文件夹删除之后的情况
+/*
+
+{
+  "state": 1,
+  "code": 0,
+  "message": "",
+  "data": {
+    "json_value": {
+      "checksum": "1298d1bd6b4b62e190cfc70b472b1f50",
+      "roots": {
+        "bookmark_bar": {
+          "children": [],
+          "date_added": "13187773795709860",
+          "date_modified": "0",
+          "id": "1",
+          "name": "\u4e66\u7b7e\u680f",
+          "type": "folder"
+        },
+        "other": {
+          "children": [],
+          "date_added": "13187773795709885",
+          "date_modified": "0",
+          "id": "2",
+          "name": "\u5176\u4ed6\u4e66\u7b7e",
+          "type": "folder"
+        },
+        "synced": {
+          "children": [],
+          "date_added": "13187773795710591",
+          "date_modified": "0",
+          "id": "28",
+          "name": "\u79fb\u52a8\u8bbe\u5907\u4e66\u7b7e",
+          "type": "folder"
+        }
+      },
+      "version": 1
+    }
+  }
+}
+
+*/

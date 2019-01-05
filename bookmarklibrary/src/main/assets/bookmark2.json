@@ -1,0 +1,45 @@
+{
+  "state": 1,
+  "code": 0,
+  "message": "//这是添加第一个书签书签的情况",
+  "data": {
+    "json_value": {
+      "checksum": "c81e474144236740a1940f3baec2bb75",
+      "roots": {
+        "bookmark_bar": {
+          "children": [
+            {
+              "date_added": "13187773997209683",
+              "id": "30",
+              "name": "\u5feb\u9012\u67e5\u8be2",
+              "type": "url",
+              "url": "http:\/\/m.tool.114la.com\/kuaidichaxun.html?token=3ea2pf58SWw5m+odhPMKO0pimN2Yef6Hh7whAhX7P\/H1i9XBUekJHsBxqEY6q43xoQ&authkey=c2a68d0c67c1aa08e7a187252fa435ced11e4bf3&client=android"
+            }
+          ],
+          "date_added": "13187773795709860",
+          "date_modified": "13187773997209683",
+          "id": "1",
+          "name": "\u4e66\u7b7e\u680f",
+          "type": "folder"
+        },
+        "other": {
+          "children": [],
+          "date_added": "13187773795709885",
+          "date_modified": "0",
+          "id": "2",
+          "name": "\u5176\u4ed6\u4e66\u7b7e",
+          "type": "folder"
+        },
+        "synced": {
+          "children": [],
+          "date_added": "13187773968000559",
+          "date_modified": "0",
+          "id": "32",
+          "name": "\u79fb\u52a8\u8bbe\u5907\u4e66\u7b7e",
+          "type": "folder"
+        }
+      },
+      "version": 1
+    }
+  }
+}

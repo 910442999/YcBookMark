@@ -1,0 +1,52 @@
+{
+   "state": 1,
+   "code": 0,
+   "message": "",
+   "data": {
+      "json_value": {
+         "version": 1,
+         "checksum": "6af056742c9664b50b8b6263022f6488",
+         "roots": {
+            "synced": {
+               "date_modified": "0",
+               "date_added": "13190979046776689",
+               "id": "106",
+               "type": "folder",
+               "name": "移动设备书签",
+               "children": []
+            },
+            "other": {
+               "date_modified": "0",
+               "date_added": "13190978161399854",
+               "id": "8",
+               "type": "folder",
+               "name": "其他书签",
+               "children": []
+            },
+            "bookmark_bar": {
+               "date_modified": "0",
+               "type": "folder",
+               "name": "书签栏",
+               "children": [{
+                  "type": "folder",
+                  "name": "就是柔娜",
+                  "children": [{
+                     "type": "folder",
+                     "name": "Mr 诺破说",
+                     "children": [],
+                     "date_added": "13190979136922440"
+                  }],
+                  "date_added": "13190979128920988"
+               }, {
+                  "date_added": "13190979132379160",
+                  "type": "folder",
+                  "name": "munvto",
+                  "children": []
+               }],
+               "date_added": "13190978161399841",
+               "id": "1"
+            }
+         }
+      }
+   }
+}

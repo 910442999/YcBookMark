@@ -1,9 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MyBookmarkChildFolderActivity">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <include layout="@layout/app_title" />
+    <LinearLayout
+        android:id="@+id/ll_add_bookmark"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/add_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="书签名字"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/add_url"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="书签连接"
+            android:padding="15dp"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="添加或编辑书签" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_my_bookmark_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <!--空数据-->
+        <include
+            android:id="@+id/ll_my_bind_bookmark"
+            layout="@layout/my_bind_bookmark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+            <!--同步和新建文件夹-->
+            <include
+                android:id="@+id/rl_sync_and_folder"
+                layout="@layout/sync_and_folder" />
+            <!--移动和删除-->
+            <include
+                android:visibility="gone"
+                android:id="@+id/rl_move_and_delete"
+                layout="@layout/move_and_delete" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

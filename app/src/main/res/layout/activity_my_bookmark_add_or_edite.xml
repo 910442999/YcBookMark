@@ -1,9 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MyBookmarkAddOrEditeActivity">
+    android:background="@color/white">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/app_title" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/title_text"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:hint="请输入标题"
+                android:imeOptions="flagNoExtractUi"
+                android:maxLength="115"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:singleLine="true"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/url_text"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="-0.5dp"
+                android:hint="请输入网址"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textUri"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:singleLine="true"
+                android:textSize="15sp" />
+
+
+            <LinearLayout
+                android:id="@+id/folder_select_panel"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:text="位置"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="end">
+
+                    <TextView
+                        android:id="@+id/folder_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="18dp"
+                        android:drawablePadding="10dp"
+                        android:gravity="center_vertical|end"
+                        android:singleLine="true"
+                        android:text="test"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

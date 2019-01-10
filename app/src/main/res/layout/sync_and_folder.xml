@@ -14,10 +14,9 @@
         android:onClick="onClick"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"
-        android:text="同步"
+        android:text="删除"
         android:textColor="#3585FF"
-        android:textSize="15sp"
-        android:visibility="gone" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/btnAddFolder"

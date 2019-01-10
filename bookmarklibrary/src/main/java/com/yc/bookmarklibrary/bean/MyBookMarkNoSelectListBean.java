@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 //自定义书签列表类
-public class MyBookMarkListBean implements Serializable {
+public class MyBookMarkNoSelectListBean implements Serializable {
     private String date_added;
     private String id;
     private String name;

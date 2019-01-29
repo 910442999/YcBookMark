@@ -14,11 +14,15 @@ import android.widget.TextView;
 
 import com.yc.bookmark.R;
 import com.yc.bookmarklibrary.BookmarkDataUtils;
+import com.yc.bookmarklibrary.bean.ChildrenBean;
 import com.yc.bookmarklibrary.bean.MyBookMarkNoSelectListBean;
 import com.yc.yclibrary.YcLogUtils;
 import com.yc.yclibrary.YcSPUtils;
 import com.yc.yclibrary.YcStringUtils;
 import com.yc.yclibrary.YcToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyBookmarkAddOrEditeActivity extends Activity implements TextWatcher, View.OnClickListener {
     private EditText mTitleEditText;
@@ -35,6 +39,9 @@ public class MyBookmarkAddOrEditeActivity extends Activity implements TextWatche
     private BookmarkDataUtils mBookmarkDataUtils;
     private int mUpdataId;
     private boolean mBackCleanUpBookMark;
+
+    //是否移动文件夹位置
+    boolean isMove = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +94,7 @@ public class MyBookmarkAddOrEditeActivity extends Activity implements TextWatche
             mBookmarkUrl = mEditeMyBookMarkNoSelectListBean.getUrl();
         }
         mFolderTextView.setText(YcStringUtils.isEmpty(parentName) ? "书签" : parentName);
+        mFolderTextView.setOnClickListener(this);
         mTvAppTitleRight.setText("保存");
         mTvAppTitleRight.setVisibility(View.VISIBLE);
         mTitleEditText.setText(mBookmarkTitle);
@@ -130,7 +138,10 @@ public class MyBookmarkAddOrEditeActivity extends Activity implements TextWatche
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.tv_app_title_right) {
+        if (v == mFolderTextView) {//新建文件夹中的位置文本
+            Intent mIntent = new Intent(this, MyBookMarkTreeViewActivity.class);
+            startActivityForResult(mIntent, 100);
+        } else if (id == R.id.tv_app_title_right) {
             final String title = mTitleEditText.getText().toString().trim();
             if (title.length() > 115) {
                 YcToastUtils.normal(this, "长度不能超过115个字符").show();
@@ -151,8 +162,18 @@ public class MyBookmarkAddOrEditeActivity extends Activity implements TextWatche
 
             //判断是添加书签还是编辑书签
             if ("addBookMark".equals(mType)) { //添加书签
+
+                ChildrenBean childrenBean = new ChildrenBean();
+                childrenBean.setDate_added(System.currentTimeMillis() + "");
+                childrenBean.setName(title);
+                childrenBean.setUrl(url);
+                //添加文件夹
+                childrenBean.setType("url");
+                List<ChildrenBean> newAddFolderList = new ArrayList<>();
+                childrenBean.setChildren(newAddFolderList);
+
                 //添加书签
-                String add_bookmark = mBookmarkDataUtils.addBookMark(mParentId, title, url);
+                String add_bookmark = mBookmarkDataUtils.addBookMark(mParentId, childrenBean);
 
                 if ("添加失败".equals(add_bookmark)) {
                     YcToastUtils.normal(this, "添加失败").show();
@@ -166,23 +187,51 @@ public class MyBookmarkAddOrEditeActivity extends Activity implements TextWatche
                 finish();
             } else if ("editeBookMark".equals(mType)) { //编辑书签
                 if (mEditeMyBookMarkNoSelectListBean != null) {
-                    //                    //重新设置数据
-                    mEditeMyBookMarkNoSelectListBean.setName(title);
-                    mEditeMyBookMarkNoSelectListBean.setUrl(url);
+                    String editeBookmark = "";
+                    if (isMove) {
+                        //先移除旧数据, 再添加新数据
+                        String removeBookMark = mBookmarkDataUtils.removeBookMark(mUpdataId, mEditeMyBookMarkNoSelectListBean);
+                        if ("移除失败".equals(removeBookMark)) {
+                            YcToastUtils.normal(this, "编辑失败").show();
+                            return;
+                        }
 
-                    String editeBookmark = mBookmarkDataUtils.editeBookMark(mUpdataId, mEditeMyBookMarkNoSelectListBean);
-                    if ("编辑失败".equals(editeBookmark)) {
-                        YcToastUtils.normal(this, "编辑失败").show();
-                        return;
+                        ChildrenBean childrenBean = new ChildrenBean();
+                        childrenBean.setDate_added(mEditeMyBookMarkNoSelectListBean.getDate_added());
+                        childrenBean.setName(title);
+                        childrenBean.setUrl(url);
+                        //添加文件夹
+                        childrenBean.setType(mEditeMyBookMarkNoSelectListBean.getType());
+                        childrenBean.setChildren(mEditeMyBookMarkNoSelectListBean.getChildren());
+
+                        //添加文件夹
+                        editeBookmark = mBookmarkDataUtils.addBookMark(mParentId, childrenBean);
+
+                        if ("添加失败".equals(editeBookmark)) {
+                            YcToastUtils.normal(this, "编辑失败").show();
+                            return;
+                        }
+                    } else {
+                        //重新设置数据
+                        mEditeMyBookMarkNoSelectListBean.setName(title);
+                        mEditeMyBookMarkNoSelectListBean.setUrl(url);
+                        //                    basePresenter.editeBookMark(mEditeMyBookMarkListBean);
+                        //编辑文件夹
+                        editeBookmark = mBookmarkDataUtils.editeBookMark(mUpdataId, mEditeMyBookMarkNoSelectListBean);
+                        if ("编辑失败".equals(editeBookmark)) {
+                            YcToastUtils.normal(this, "编辑失败").show();
+                            return;
+                        }
                     }
+
                     YcSPUtils.getInstance("MyBookmark").put("bookmark", editeBookmark);
                     YcLogUtils.eTag("tag", editeBookmark);
                     YcToastUtils.normal(this, "编辑成功").show();
                     setResult(RESULT_OK);
                     finish();
+
                 }
             }
-
 
             //            if (!mIsAddToNtp) {
             //                if (mCurrentAddToType == ADD_TO_BOOKMARK) {
@@ -256,5 +305,17 @@ public class MyBookmarkAddOrEditeActivity extends Activity implements TextWatche
         super.onDestroy();
         if ("addBookMark".equals(mType) && mBackCleanUpBookMark)  //添加书签
             mBookmarkDataUtils.clearData();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            if (requestCode == 100 && resultCode == RESULT_OK) {
+                isMove = true;
+                mParentId = data.getStringExtra("ParentId");
+                mFolderTextView.setText(data.getStringExtra("Name"));
+            }
+        }
     }
 }

@@ -57,6 +57,13 @@ public class BookmarkDataUtils {
     }
 
     /**
+     * 设置当前书签文件夹
+     */
+    public void setCurrentBookmarkFolder(String CurrentBookmarkFolder) {
+        YcSPUtils.getInstance("YcBookmark").put("CurrentBookmarkFolder", CurrentBookmarkFolder);
+    }
+
+    /**
      * 检查是否是书签json格式
      *
      * @param bookmark
@@ -84,6 +91,13 @@ public class BookmarkDataUtils {
      */
     public String getBookmark() {
         return YcSPUtils.getInstance("YcBookmark").getString("bookmark");
+    }
+
+    /**
+     * 获取当前书签文件夹
+     */
+    public String getCurrentBookmarkFolder() {
+        return YcSPUtils.getInstance("YcBookmark").getString("CurrentBookmarkFolder");
     }
 
 
@@ -143,25 +157,29 @@ public class BookmarkDataUtils {
 
 
     public List<ChildrenBean> recursiveBookmarkChildren(String childrenId, List<ChildrenBean> childrenParent) {
-
+        List<ChildrenBean> childrenChildren = new ArrayList<>();
         //书签集合列表
         for (int i = 0; i < childrenParent.size(); i++) {
             if (isRecursive) {
                 ChildrenBean childrenBean = childrenParent.get(i);
                 if (childrenId.equals(childrenBean.getDate_added())) {
                     isRecursive = false;
-                    return childrenBean.getChildren();
+                    childrenChildren.clear();
+                    childrenChildren.addAll(childrenBean.getChildren());
+                    return childrenChildren;
                 } else {
                     //不是匹配子类中的文件夹
-                    List<ChildrenBean> childrenChildren = childrenBean.getChildren();
+                    List<ChildrenBean> childrenChildren2 = childrenBean.getChildren();
                     //说明子类文件夹下面还有文件夹 递归进入
-                    if (childrenChildren != null && childrenChildren.size() > 0) {
-                        recursiveBookmarkChildren(childrenId, childrenChildren);
+                    if (childrenChildren2 != null && childrenChildren2.size() > 0) {
+                        List<ChildrenBean> childrenBeans = recursiveBookmarkChildren(childrenId, childrenChildren2);
+                        childrenChildren.clear();
+                        childrenChildren.addAll(childrenBeans);
                     }
                 }
             }
         }
-        return new ArrayList<>();
+        return childrenChildren;
     }
 
     /**
@@ -232,50 +250,29 @@ public class BookmarkDataUtils {
      * 否则  都为空数据 ,添加模板书签
      *
      * @param parentId 为空则是最外层父类 , 不为空则为子类文件夹
-     * @param name     添加的名字
-     * @param url      不为空则是书签 , 为空则是文件夹
      * @return 添加后的数据集json
      */
-    public String addBookMark(String parentId, String name, String url) {
-        if (!YcStringUtils.isEmpty(name)) {
-            JsonValueBean jsonValueBean = gson.fromJson(getBookmark(), JsonValueBean.class);
-            if (jsonValueBean != null && jsonValueBean.getRoots() != null && jsonValueBean.getRoots().getBookmark_bar() != null) {
+    public String addBookMark(String parentId, ChildrenBean childrenBean) {
+        JsonValueBean jsonValueBean = gson.fromJson(getBookmark(), JsonValueBean.class);
+        if (jsonValueBean != null && jsonValueBean.getRoots() != null && jsonValueBean.getRoots().getBookmark_bar() != null) {
 
-                BookmarkBarBean bookmarkBarBean = jsonValueBean.getRoots().getBookmark_bar();
-                List<ChildrenBean> childrenBeanList = bookmarkBarBean.getChildren();
+            BookmarkBarBean bookmarkBarBean = jsonValueBean.getRoots().getBookmark_bar();
+            List<ChildrenBean> childrenBeanList = bookmarkBarBean.getChildren();
 
-                //======================== 先创建新的数据bean类 等待添加  start =================================
-                ChildrenBean childrenBean = new ChildrenBean();
-                childrenBean.setDate_added(System.currentTimeMillis() + "");
-                childrenBean.setName(name);
-                if (!TextUtils.isEmpty(url)) {
-                    //添加书签
-                    childrenBean.setUrl(url);
-                    childrenBean.setType("url");
-                } else {
-                    //添加文件夹
-                    childrenBean.setType("folder");
-                    List<ChildrenBean> newAddFolderList = new ArrayList<>();
-                    childrenBean.setChildren(newAddFolderList);
-                }
-
-                //======================== 先创建新的数据bean类 等待添加  end =================================
-
-                //最外层父类 直接添加数据即可
-                if (YcStringUtils.isEmpty(parentId)) {
-                    childrenBeanList.add(childrenBean);
-                    bookmarkBarBean.setChildren(childrenBeanList);
-                } else {
-                    //说明是子类文件夹 (根据父类文件夹id 查找相对应的文件夹并添加数据)
-                    bookmarkBarBean.setChildren(recursiveAddBookmark(parentId, childrenBeanList, childrenBean));
-                }
-                jsonValueBean.getRoots().setBookmark_bar(bookmarkBarBean);
-                String toJson = gson.toJson(jsonValueBean);
-                //保存新的数据
-                setBookmark(toJson);
-                //添加书签
-                return toJson;
+            //最外层父类 直接添加数据即可
+            if (YcStringUtils.isEmpty(parentId)) {
+                childrenBeanList.add(childrenBean);
+                bookmarkBarBean.setChildren(childrenBeanList);
+            } else {
+                //说明是子类文件夹 (根据父类文件夹id 查找相对应的文件夹并添加数据)
+                bookmarkBarBean.setChildren(recursiveAddBookmark(parentId, childrenBeanList, childrenBean));
             }
+            jsonValueBean.getRoots().setBookmark_bar(bookmarkBarBean);
+            String toJson = gson.toJson(jsonValueBean);
+            //保存新的数据
+            setBookmark(toJson);
+            //添加书签
+            return toJson;
         }
         return "添加失败";
     }

@@ -208,7 +208,7 @@ public class MyBookmarkChildFolderActivity extends Activity implements View.OnCl
             //文件夹
             Intent intent = new Intent(this, MyBookmarkChildFolderActivity.class);
             intent.putExtra("parentId", myBookMarkNoSelectListBean.getDate_added());
-            intent.putExtra("parentFolderName", myBookMarkNoSelectListBean.getParentFolderName());
+            intent.putExtra("parentFolderName", myBookMarkNoSelectListBean.getName());
             startActivityForResult(intent, 100);//书签和文件相同的code即可
         }
     }

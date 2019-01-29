@@ -20,6 +20,7 @@
         <activity android:name=".ui.MyBookMarkActivity" />
         <activity android:name=".ui.MyBookmarkAddEditFolderActivity" />
         <activity android:name=".ui.MyBookmarkChildFolderActivity"></activity>
+        <activity android:name=".ui.MyBookMarkTreeViewActivity"></activity>
     </application>
 
 </manifest>

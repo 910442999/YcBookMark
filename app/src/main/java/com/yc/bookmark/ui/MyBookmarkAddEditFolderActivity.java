@@ -3,6 +3,7 @@ package com.yc.bookmark.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
@@ -11,10 +12,15 @@ import android.widget.TextView;
 
 import com.yc.bookmark.R;
 import com.yc.bookmarklibrary.BookmarkDataUtils;
+import com.yc.bookmarklibrary.bean.ChildrenBean;
 import com.yc.bookmarklibrary.bean.MyBookMarkNoSelectListBean;
 import com.yc.yclibrary.YcLogUtils;
 import com.yc.yclibrary.YcSPUtils;
 import com.yc.yclibrary.YcToastUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyBookmarkAddEditFolderActivity extends Activity implements View.OnClickListener {
     private MyBookMarkNoSelectListBean mEditeMyBookMarkNoSelectListBean;
@@ -24,6 +30,8 @@ public class MyBookmarkAddEditFolderActivity extends Activity implements View.On
     private BookmarkDataUtils mBookmarkDataUtils;
     private String mParentId;
     private int mUpdataId;
+
+    boolean isMove = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +74,8 @@ public class MyBookmarkAddEditFolderActivity extends Activity implements View.On
             mUpdataId = getIntent().getIntExtra("updataId", -1);
             mFolderTitle.setText(mEditeMyBookMarkNoSelectListBean.getName());
             mFolderTitle.setSelection(mFolderTitle.getText().length());
-            //暂时设置不可启用
-            mParentTextView.setEnabled(false);
+            //            //暂时设置不可启用
+            //            mParentTextView.setEnabled(false);
         }
 
         mParentTextView.setText(parentFolderName);
@@ -79,7 +87,8 @@ public class MyBookmarkAddEditFolderActivity extends Activity implements View.On
             finish();
         }
         if (v == mParentTextView) {//新建文件夹中的位置文本
-
+            Intent mIntent = new Intent(this, MyBookMarkTreeViewActivity.class);
+            startActivityForResult(mIntent, 100);
         } else if (v == mSaveButton) {
             String title = mFolderTitle.getText().toString().trim();
             if (title.length() == 0) {
@@ -99,8 +108,16 @@ public class MyBookmarkAddEditFolderActivity extends Activity implements View.On
                 //                    ToastUtils.show(this, "保存成功", ToastUtils.Style.TOAST_SUCCESS);
                 //                }
 
+                ChildrenBean childrenBean = new ChildrenBean();
+                childrenBean.setDate_added(System.currentTimeMillis() + "");
+                childrenBean.setName(title);
                 //添加文件夹
-                String addBookMarkFolder = mBookmarkDataUtils.addBookMark(mParentId, title, "");
+                childrenBean.setType("folder");
+                List<ChildrenBean> newAddFolderList = new ArrayList<>();
+                childrenBean.setChildren(newAddFolderList);
+
+                //添加文件夹
+                String addBookMarkFolder = mBookmarkDataUtils.addBookMark(mParentId, childrenBean);
 
                 if ("添加失败".equals(addBookMarkFolder)) {
                     YcToastUtils.normal(this, "添加失败").show();
@@ -132,24 +149,62 @@ public class MyBookmarkAddEditFolderActivity extends Activity implements View.On
                 //                    ToastUtils.show(this, "修改成功", ToastUtils.Style.TOAST_SUCCESS);
                 //                }
                 if (mEditeMyBookMarkNoSelectListBean != null) {
-                    //重新设置数据
-                    mEditeMyBookMarkNoSelectListBean.setName(title);
-                    //                    basePresenter.editeBookMark(mEditeMyBookMarkListBean);
-                    //编辑文件夹
-                    String editeBookmarkFolder = mBookmarkDataUtils.editeBookMark(mUpdataId, mEditeMyBookMarkNoSelectListBean);
-                    if ("编辑失败".equals(editeBookmarkFolder)) {
-                        YcToastUtils.normal(this, "编辑失败").show();
-                        return;
+                    String editeBookmarkFolder = "";
+                    if (isMove) {
+                        //先移除旧数据, 再添加新数据
+                        String removeBookMark = mBookmarkDataUtils.removeBookMark(mUpdataId, mEditeMyBookMarkNoSelectListBean);
+                        if ("移除失败".equals(removeBookMark)) {
+                            YcToastUtils.normal(this, "编辑失败").show();
+                            return;
+                        }
+
+                        ChildrenBean childrenBean = new ChildrenBean();
+                        childrenBean.setDate_added(mEditeMyBookMarkNoSelectListBean.getDate_added());
+                        childrenBean.setName(title);
+                        //添加文件夹
+                        childrenBean.setType(mEditeMyBookMarkNoSelectListBean.getType());
+                        childrenBean.setChildren(mEditeMyBookMarkNoSelectListBean.getChildren());
+
+                        //添加文件夹
+                        editeBookmarkFolder = mBookmarkDataUtils.addBookMark(mParentId, childrenBean);
+
+                        if ("添加失败".equals(editeBookmarkFolder)) {
+                            YcToastUtils.normal(this, "编辑失败").show();
+                            return;
+                        }
+                    } else {
+                        //重新设置数据
+                        mEditeMyBookMarkNoSelectListBean.setName(title);
+                        //                    basePresenter.editeBookMark(mEditeMyBookMarkListBean);
+                        //编辑文件夹
+                        editeBookmarkFolder = mBookmarkDataUtils.editeBookMark(mUpdataId, mEditeMyBookMarkNoSelectListBean);
+                        if ("编辑失败".equals(editeBookmarkFolder)) {
+                            YcToastUtils.normal(this, "编辑失败").show();
+                            return;
+                        }
                     }
+
 
                     //保存书签 , 需要区分网络和本地书签 (暂时只作本地)
                     YcSPUtils.getInstance("MyBookmark").put("bookmark", editeBookmarkFolder);
-                    YcLogUtils.eTag("tag编辑文件夹", editeBookmarkFolder);
                     YcToastUtils.normal(this, "编辑成功").show();
                     setResult(RESULT_OK);
                     finish();
 
                 }
+            }
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            if (requestCode == 100 && resultCode == RESULT_OK) {
+                isMove = true;
+                mParentId = data.getStringExtra("ParentId");
+                mParentTextView.setText(data.getStringExtra("Name"));
             }
         }
     }
